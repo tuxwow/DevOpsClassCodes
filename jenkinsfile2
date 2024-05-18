@@ -1,40 +1,45 @@
+def sample_array = ["Akshat", "John", "Aman"]
 pipeline{
+    environment{
+  git = "https://github.com/akshu20791/DevOpsClassCodes/"
+  compile = "mvn compile"
+  FNAME = "Akshat_global"
+}
     agent any
-    environment {
-        VCS = "git"
-        FNAME = "akshat"
-        compilegoal = "compile"
-        testinggoal = "test"
-        qagoal = "checkstyle:checkstyle"
-        packagegoal = "package"
-    }
     stages{
-        stage("checkout the code from github"){
+        stage('checkout the code from github'){
+         environment{
+          FNAME = "Akshat_local"
+         }
             steps{
-                echo "our version control system is ${VCS}"
-                git url:"https://github.com/akshu20791/DevOpsClassCodes"
+                 git url: "${git}"
+                 echo 'github url checkout'
+                 sh 'echo ${FNAME}'
+                 echo "${sample_array[0]}"
             }
         }
-        stage("compile the code"){
+        stage('codecompile with akshat'){
             steps{
-                sh "mvn ${compilegoal}"
+                echo 'starting compiling'
+                sh '${compile}'
+                sh 'echo ${FNAME}'
             }
         }
-        stage("test the functionality of the code"){
+        stage('codetesting with akshat'){
             steps{
-                sh "mvn ${testinggoal}"
+                sh 'mvn test'
+ 
             }
         }
-        stage("quality assurance of the code"){
+        stage('qa with akshat'){
             steps{
-                sh "mvn ${qagoal}"
-                echo"Generating the reports"
-                recordIssues(tools: [checkStyle()])
+                sh 'mvn checkstyle:checkstyle'
+                recordIssues sourceCodeRetention: 'LAST_BUILD', tools: [checkStyle()]
             }
         }
-        stage("package the code"){
+        stage('package with akshat'){
             steps{
-                sh "mvn ${packagegoal}"
+                sh 'mvn package'
             }
         }
     }
